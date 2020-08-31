@@ -34,6 +34,16 @@ func sensor() {
 	defer ch.Close()
 
 	dataQueue := queueutils.GetQueue(*name, ch)
+	sensorQueue := queueutils.GetQueue(queueutils.SensorListQueue, ch)
+
+	msg := amqp.Publishing{Body: []byte(*name)}
+
+	ch.Publish(
+		"",
+		sensorQueue.Name,
+		false,
+		false,
+		msg)
 
 	dur, _ := time.ParseDuration(strconv.Itoa(1000/int(*freq)) + "ms")
 
