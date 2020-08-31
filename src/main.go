@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/kielkow/go-rabbit-server/src/env"
 	"github.com/streadway/amqp"
 )
 
 func main() {
+	env.SetEnv()
+
 	go client()
 	go server()
 

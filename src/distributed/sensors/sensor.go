@@ -11,6 +11,8 @@ import (
 	"bytes"
 )
 
+var url = os.Getenv("AMQP_URL")
+
 var name = flag.String("name", "sensor", "name of the sensor")
 var freq = flag.Uint("freq", 5, "update frequency in cycles/sec")
 var max = flag.Float64("max", 5., "maximum value for generated readings")
