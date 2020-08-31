@@ -1,14 +1,16 @@
 package sensor
 
 import (
-	"flag"
 	"log"
-	"math/rand"
-	"strconv"
+	"flag"
 	"time"
+	"bytes"
+	"strconv"
+	"math/rand"
 	"encoding/gob"
 	"distributed/dto"
-	"bytes"
+	"distributed/queueutils"
+	"github.com/streadway/amqp"
 )
 
 var url = os.Getenv("AMQP_URL")
@@ -27,6 +29,12 @@ var nom = (*max-*min)/2 + *min
 func sensor() {
 	flag.Parse()
 
+	conn, ch := queueutils.GetChannel(url)
+	defer conn.Close()
+	defer ch.Close()
+
+	dataQueue := queueutils.GetQueue(*name, ch)
+
 	dur, _ := time.ParseDuration(strconv.Itoa(1000/int(*freq)) + "ms")
 
 	signal := time.Tick(dur)
@@ -44,6 +52,18 @@ func sensor() {
 
 		buf.Reset()
 		enc.Encode(reading)
+
+		msg := amqp.Publishing{
+			Body: buf.Bytes(),
+
+		}
+
+		ch.Publish(
+			"",
+			dataQueue.Name,
+			false,
+			false,
+			msg)
 
 		log.Printf("Reading sent. Value: %v\n", value)
 	}
