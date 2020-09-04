@@ -34,13 +34,12 @@ func sensor() {
 	defer ch.Close()
 
 	dataQueue := queueutils.GetQueue(*name, ch)
-	sensorQueue := queueutils.GetQueue(queueutils.SensorListQueue, ch)
 
 	msg := amqp.Publishing{Body: []byte(*name)}
 
 	ch.Publish(
+		"amq.fanout",
 		"",
-		sensorQueue.Name,
 		false,
 		false,
 		msg)
