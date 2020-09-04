@@ -60,11 +60,11 @@ func sensor() {
 		}
 
 		buf.Reset()
+		enc := gob.NewEncoder(buf)
 		enc.Encode(reading)
 
 		msg := amqp.Publishing{
-			Body: buf.Bytes(),
-
+			Body: buf.Bytes()
 		}
 
 		ch.Publish(
