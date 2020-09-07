@@ -35,14 +35,18 @@ func sensor() {
 
 	dataQueue := queueutils.GetQueue(*name, ch)
 
-	msg := amqp.Publishing{Body: []byte(*name)}
+	publishQueueName(ch)
 
-	ch.Publish(
-		"amq.fanout",
+	discoveryQueue := queueutils.GetQueue("", ch)
+	
+	ch.QueueBind(
+		discoveryQueue.Name,
 		"",
+		queueutils.SensorDiscoveryExchange,
 		false,
-		false,
-		msg)
+		nil)
+
+	go listenForDiscoverRequests(discoveryQueue.Name, ch)
 
 	dur, _ := time.ParseDuration(strconv.Itoa(1000/int(*freq)) + "ms")
 
@@ -76,6 +80,32 @@ func sensor() {
 
 		log.Printf("Reading sent. Value: %v\n", value)
 	}
+}
+
+func listenForDiscoverRequests(name string, ch *amqp.Channel) {
+	msgs, _ := ch.Consume(
+		name,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil)
+	
+	for range msgs {
+		publishQueueName(ch)
+	}
+}
+
+func publishQueueName(ch *amqp.Channel) {
+	msg := amqp.Publishing{Body: []byte(*name)}
+
+	ch.Publish(
+		"amq.fanout",
+		"",
+		false,
+		false,
+		msg)
 }
 
 func calcValue() {

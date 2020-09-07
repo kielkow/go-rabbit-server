@@ -7,8 +7,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// SensorListQueue const
-const SensorListQueue = "SensorList"
+// SensorDiscoveryExchange const
+const SensorDiscoveryExchange = "SensorDiscovery"
 
 // GetChannel func
 func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
@@ -42,4 +42,22 @@ func failOnError(err error, msg string) {
 		log.Fatalf("%s: %s", msg, err.Error)
 		panic(fmt.Sprintf("%s: %s", msg, err.Error))
 	}
+}
+
+func (ql *QueueListener) DiscoverSensors() {
+	ql.ch.ExchangeDeclare(
+		queueutils.SensorDiscoveryExchange,
+		"fanout",
+		false,
+		false,
+		false,
+		false,
+		nil) args amqp.Table)
+	
+	ql.ch.Publish(
+		queueutils.SensorDiscoveryExchange,
+		"",
+		false,
+		false,
+		amqp.Publishing{})
 }

@@ -52,6 +52,10 @@ func (ql *QueueListener) ListenForNewSource() {
 		false,
 		nil)
 
+	ql.DiscoverSensors()
+
+	fmt.Println("listening for new sources")
+
 	for msg := range msgs {
 		sourceChan, _ := ql.ch.Consume(
 			string(msg.Body),
