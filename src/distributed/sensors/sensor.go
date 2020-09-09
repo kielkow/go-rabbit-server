@@ -33,11 +33,11 @@ func sensor() {
 	defer conn.Close()
 	defer ch.Close()
 
-	dataQueue := queueutils.GetQueue(*name, ch)
+	dataQueue := queueutils.GetQueue(*name, ch, false)
 
 	publishQueueName(ch)
 
-	discoveryQueue := queueutils.GetQueue("", ch)
+	discoveryQueue := queueutils.GetQueue("", ch, true)
 	
 	ch.QueueBind(
 		discoveryQueue.Name,

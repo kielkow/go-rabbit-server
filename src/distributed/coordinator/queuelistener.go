@@ -34,7 +34,7 @@ func NewQueueListener() *QueueListener {
 
 // ListenForNewSource func
 func (ql *QueueListener) ListenForNewSource() {
-	q := queueutils.GetQueue("", ql.ch)
+	q := queueutils.GetQueue("", ql.ch, true)
 
 	ql.ch.QueueBind(
 		q.Name,
