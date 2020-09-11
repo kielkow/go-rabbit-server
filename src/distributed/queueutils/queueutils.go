@@ -3,12 +3,14 @@ package queueutils
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 )
 
 // SensorDiscoveryExchange const
-const SensorDiscoveryExchange = "SensorDiscovery"
+const SensorDiscoveryExchange = os.Getenv("SENSOR_DISCOVERY_EXCHANGE")
+const PersistReadingsQueue = os.Getenv("PERSIST_READINGS_QUEUE")
 
 // GetChannel func
 func GetChannel(url string) (*amqp.Connection, *amqp.Channel) {
